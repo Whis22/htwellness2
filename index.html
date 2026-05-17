@@ -649,3 +649,58 @@ function downloadQR() {
 </script>
 </body>
 </html>
+<button onclick="exportCSV()">Export CSV</button>
+function exportCSV() {
+
+    let responses = JSON.parse(localStorage.getItem("surveyResponses")) || [];
+
+    if (responses.length === 0) {
+        alert("No data found");
+        return;
+    }
+
+    let csv = [];
+
+    // headers
+    csv.push([
+        "Timestamp",
+        "Department",
+        "Q1","Q2","Q3","Q4","Q5","Q6","Q7","Q8","Q9",
+        "AverageScore",
+        "DisagreementReason",
+        "Takeaways"
+    ].join(","));
+
+    // rows
+    responses.forEach(r => {
+
+        csv.push([
+            r.timestamp,
+            r.department,
+            r.q1,
+            r.q2,
+            r.q3,
+            r.q4,
+            r.q5,
+            r.q6,
+            r.q7,
+            r.q8,
+            r.q9,
+            r.avgScore,
+            `"${r.disagreementReason}"`,
+            `"${r.takeaways}"`
+        ].join(","));
+
+    });
+
+    // download
+    const blob = new Blob([csv.join("\n")], { type: "text/csv" });
+
+    const link = document.createElement("a");
+
+    link.href = URL.createObjectURL(blob);
+
+    link.download = "survey_results.csv";
+
+    link.click();
+}
